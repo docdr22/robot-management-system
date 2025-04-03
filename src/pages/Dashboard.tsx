@@ -16,6 +16,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import { FiCpu, FiTruck, FiDisc, FiWifi, FiBox } from "react-icons/fi";
 
 interface Robot {
   id?: string;
@@ -60,6 +61,31 @@ export default function Dashboard() {
     };
     fetchData();
   }, [user]);
+
+  const getRandomColor = (id: string) => {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+      hash = id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 60%)`;
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "drone":
+        return <FiCpu />;
+      case "uav":
+        return <FiWifi />;
+      case "vacuum":
+        return <FiDisc />;
+      case "arm":
+      case "robot arm":
+        return <FiBox />;
+      default:
+        return <FiTruck />;
+    }
+  };
 
   const handleCreateClick = () => {
     setSelectedRobot({
@@ -157,33 +183,44 @@ export default function Dashboard() {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="bg-white shadow rounded-xl p-4 w-80"
+                            className="bg-white shadow rounded-xl p-4 w-80 flex flex-col justify-between"
                           >
-                            <h3 className="text-lg font-semibold mb-1">
-                              {robot.name}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              Type: {robot.type}
-                            </p>
-                            <p className="text-sm text-green-600">
-                              Status: {robot.status}
-                            </p>
-                            <p className="text-sm">
-                              Battery: {robot.battery ?? "N/A"}%
-                            </p>
-                            <div className="flex justify-between mt-2">
-                              <button
-                                onClick={() => handleEdit(robot)}
-                                className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                            <div>
+                              <h3 className="text-lg font-semibold mb-1">
+                                {robot.name}
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                Type: {robot.type}
+                              </p>
+                              <p className="text-sm text-green-600">
+                                Status: {robot.status}
+                              </p>
+                              <p className="text-sm">
+                                Battery: {robot.battery ?? "N/A"}%
+                              </p>
+                            </div>
+
+                            <div className="flex flex-col items-end mt-2">
+                              <div
+                                className="mb-2 p-2 rounded-full"
+                                style={{ color: getRandomColor(robot.id!) }}
                               >
-                                View
-                              </button>
-                              <button
-                                onClick={() => handleDelete(robot.id!)}
-                                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                              >
-                                Delete
-                              </button>
+                                {getTypeIcon(robot.type)}
+                              </div>
+                              <div className="flex justify-between w-full">
+                                <button
+                                  onClick={() => handleEdit(robot)}
+                                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                >
+                                  View
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(robot.id!)}
+                                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                >
+                                  Delete
+                                </button>
+                              </div>
                             </div>
                           </div>
                         )}
